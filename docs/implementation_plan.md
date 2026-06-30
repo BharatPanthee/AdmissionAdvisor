@@ -16,10 +16,10 @@ This plan details the integration of a **Hybrid Subscription & Token Credit syst
 
 ```mermaid
 graph TD
-    User[Student UI] -->|Deduct Credits| MW[requireCredits Middleware]
-    MW -->|Has Credits| DB[(SQLite Database)]
-    MW -->|Low Credits| Err[402 Credit Quota Exceeded]
-    User -->|Subscribe / Top-up| BillingAPI[Express Billing Endpoints]
+    User["Student UI"] -->|Deduct Credits| MW["requireCredits Middleware"]
+    MW -->|Has Credits| DB[("SQLite Database")]
+    MW -->|Low Credits| Err["402 Credit Quota Exceeded"]
+    User -->|Subscribe / Top-up| BillingAPI["Express Billing Endpoints"]
     BillingAPI -->|Update Balance| DB
 ```
 

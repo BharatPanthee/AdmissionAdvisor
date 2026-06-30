@@ -11,36 +11,36 @@ Astra is built using a modern decoupled architecture:
 ```mermaid
 graph LR
     subgraph Frontend [React SPA (Vite)]
-        UI[User Interface]
-        State[React State / LocalStorage]
+        UI["User Interface"]
+        State["React State / LocalStorage"]
     end
 
     subgraph Backend [Express.js Server]
-        API[Express Router]
-        Auth[Mock OAuth Middleware]
-        Billing[Billing Controller]
-        Deduct[Credit Verification Middleware]
-        GeminiService[Gemini API Integration]
+        API["Express Router"]
+        Auth["Mock OAuth Middleware"]
+        Billing["Billing Controller"]
+        Deduct["Credit Verification Middleware"]
+        GeminiService["Gemini API Integration"]
     end
 
     subgraph Storage [Database]
-        Prisma[Prisma Client v6]
-        DB[(SQLite File dev.db)]
+        Prisma["Prisma Client v6"]
+        DB[("SQLite File dev.db")]
     end
 
     subgraph External [AI Core]
-        Gemini[Google Gemini 2.5 Flash API]
+        Gemini["Google Gemini 2.5 Flash API"]
     end
 
-    UI <--> API
-    API <--> Auth
-    API <--> Billing
-    API <--> Deduct
-    Deduct <--> Prisma
-    Billing <--> Prisma
-    GeminiService <--> Gemini
-    API <--> GeminiService
-    Prisma <--> DB
+    UI --- API
+    API --- Auth
+    API --- Billing
+    API --- Deduct
+    Deduct --- Prisma
+    Billing --- Prisma
+    GeminiService --- Gemini
+    API --- GeminiService
+    Prisma --- DB
 ```
 
 *   **Frontend**: Built with React (Vite). Styling is done using custom vanilla CSS for glassmorphism and reactive layouts. State is persisted locally via `localStorage` for seamless resumption.
@@ -67,10 +67,10 @@ erDiagram
 
     USER {
         string id PK
-        string email UK
+        string email
         string name
-        string tier "FREE | PREMIUM"
-        float credits "Default: 5.0"
+        string tier
+        float credits
         string stripeSubscriptionId
         datetime createdAt
     }
@@ -79,19 +79,19 @@ erDiagram
         string id PK
         string userId FK
         int grade
-        string academicSubjects "JSON Array"
-        string interests "JSON Array"
-        string careerGoals "JSON Array"
-        string extracurriculars "JSON Array"
-        string skills "JSON Array"
-        string targetUniversities "JSON Array"
+        string academicSubjects
+        string interests
+        string careerGoals
+        string extracurriculars
+        string skills
+        string targetUniversities
         datetime updatedAt
     }
 
     PROFILEDRAFT {
         string id PK
         string userId FK
-        string draftData "JSON Object (Auto-saved)"
+        string draftData
         datetime updatedAt
     }
 
@@ -103,9 +103,9 @@ erDiagram
         int minGrade
         int maxGrade
         string difficulty
-        string requiredSkills "JSON Array"
-        string tags "JSON Array"
-        string suggestedExecutionPathways "JSON Array"
+        string requiredSkills
+        string tags
+        string suggestedExecutionPathways
     }
 
     USERPROJECT {
@@ -114,8 +114,8 @@ erDiagram
         string projectId FK
         string selectedPathway
         string customizationNotes
-        string status "IN_PROGRESS | COMPLETED | ABANDONED"
-        string alignmentScoreDetails "JSON Object"
+        string status
+        string alignmentScoreDetails
         datetime startedAt
     }
 
@@ -126,7 +126,7 @@ erDiagram
         string description
         int sequenceOrder
         int estimatedDurationWeeks
-        string status "NOT_STARTED | IN_PROGRESS | COMPLETED"
+        string status
     }
 
     TASK {
@@ -143,14 +143,14 @@ erDiagram
         string challenges
         string solutions
         string resourcesUsed
-        string mediaLinks "JSON Array (Attachments)"
+        string mediaLinks
         datetime createdAt
     }
 
     CHATMESSAGE {
         string id PK
         string userProjectId FK
-        string sender "USER | ADVISOR"
+        string sender
         string message
         datetime createdAt
     }
@@ -229,31 +229,31 @@ flowchart TD
     Start([API Request Received]) --> Auth[Identify user from headers]
     Auth --> CheckCost{Does route cost credits?}
     
-    CheckCost -- No --> Exec[Execute Endpoint Handler]
+    CheckCost -->|No| Exec[Execute Endpoint Handler]
     
-    CheckCost -- Yes --> FetchDB[(Fetch User from DB)]
+    CheckCost -->|Yes| FetchDB[("Fetch User from DB")]
     FetchDB --> HasCredits{user.credits >= Cost?}
     
-    HasCredits -- Yes --> Deduct[Deduct Cost from User Balance]
+    HasCredits -->|Yes| Deduct[Deduct Cost from User Balance]
     Deduct --> SaveUser[Save User back to DB]
     SaveUser --> Exec
     Exec --> Success([Send 200 OK Response])
 
-    HasCredits -- No --> Error[Throw Error: Insufficient Credits]
+    HasCredits -->|No| Error[Throw Error: Insufficient Credits]
     Error --> Response[Send HTTP 402 Code & json error body]
-    Response --> UI[Frontend displays 'Credits Depleted' Modal]
+    Response --> UI["Frontend displays 'Credits Depleted' Modal"]
     UI --> Redirect[User clicks 'Go to Billing Panel']
     Redirect --> Option{Select Payment Option}
 
-    Option -- Buy Top-Up Pack --> PostTopUp[POST /api/billing/buy-credits]
-    Option -- Subscribe to Premium --> PostSub[POST /api/billing/subscribe]
+    Option -->|Buy Top-Up Pack| PostTopUp[POST /api/billing/buy-credits]
+    Option -->|Subscribe to Premium| PostSub[POST /api/billing/subscribe]
 
-    PostTopUp --> CreditBal[Add Pack Credits e.g., 50.0 to DB]
-    PostSub --> SetPremium[Set Tier = PREMIUM & Add 100.0 Credits to DB]
+    PostTopUp --> CreditBal["Add Pack Credits (e.g. 50.0) to DB"]
+    PostSub --> SetPremium["Set Tier = PREMIUM & Add 100.0 Credits to DB"]
     
     CreditBal --> Refresh[UI refreshes status header badge]
     SetPremium --> Refresh
-    Refresh --> CloseModal([Modal closes; action can now be retried])
+    Refresh --> CloseModal["Modal closes; action can now be retried"]
 ```
 
 ### Route Cost Matrix
