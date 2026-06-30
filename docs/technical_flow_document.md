@@ -10,12 +10,12 @@ Astra is built using a modern decoupled architecture:
 
 ```mermaid
 graph LR
-    subgraph Frontend [React SPA (Vite)]
+    subgraph Frontend ["React SPA (Vite)"]
         UI["User Interface"]
         State["React State / LocalStorage"]
     end
 
-    subgraph Backend [Express.js Server]
+    subgraph Backend ["Express.js Server"]
         API["Express Router"]
         Auth["Mock OAuth Middleware"]
         Billing["Billing Controller"]
@@ -23,12 +23,12 @@ graph LR
         GeminiService["Gemini API Integration"]
     end
 
-    subgraph Storage [Database]
+    subgraph Storage ["Database"]
         Prisma["Prisma Client v6"]
         DB[("SQLite File dev.db")]
     end
 
-    subgraph External [AI Core]
+    subgraph External ["AI Core"]
         Gemini["Google Gemini 2.5 Flash API"]
     end
 
