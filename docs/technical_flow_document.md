@@ -174,7 +174,7 @@ sequenceDiagram
     Student->>Server: Login (OAuth Gmail payload)
     Server->>DB: Upsert User (creates FREE profile, sets credits = 5.0)
     DB-->>Server: Return User & Draft status
-    Server-->>Student: Set user in state; notify if draft exists
+    Server-->>Student: Set user in state and notify if draft exists
 
     Note over Student, Server: 2. Interactive Wizard Auto-Saving
     loop Every 2 seconds on form input change
@@ -195,7 +195,7 @@ sequenceDiagram
 
     Note over Student, LLM: 4. Pathway Customization & Milestone Generation (Cost: 1.0 token)
     Student->>Server: POST /api/projects/select (ID + Pathway)
-    Server->>DB: Check & deduct 1.0 credits; Archive old projects
+    Server->>DB: Check & deduct 1.0 credits and archive old projects
     Server->>LLM: Generate milestones + tasks + resources
     LLM-->>Server: structured milestone JSON roadmap
     Server->>DB: Create UserProject, Milestones, and Tasks
@@ -203,7 +203,7 @@ sequenceDiagram
 
     Note over Student, LLM: 5. Chat & Reflections (Cost: 0.1 tokens/chat message)
     Student->>Server: POST /api/projects/active/chat (message)
-    Server->>DB: Check & deduct 0.1 credits; Save user message
+    Server->>DB: Check & deduct 0.1 credits and save user message
     Server->>LLM: Request Astra reply based on profile + 15 msg history
     LLM-->>Server: Advisor response text
     Server->>DB: Save advisor message
