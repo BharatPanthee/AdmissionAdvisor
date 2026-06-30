@@ -1,0 +1,117 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                   String        @id @default(uuid())
+  email                String        @unique
+  name                 String?
+  tier                 String        @default("FREE") // FREE, PREMIUM
+  credits              Float         @default(5.0)    // Token balance
+  stripeSubscriptionId String?
+  createdAt            DateTime      @default(now())
+  profile              Profile?
+  profileDraft         ProfileDraft?
+  userProjects         UserProject[]
+}
+
+model Profile {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grade              Int
+  academicSubjects   String   // JSON string of array
+  interests          String   // JSON string of array
+  careerGoals        String   // JSON string of array
+  extracurriculars   String   // JSON string of array
+  skills             String   // JSON string of array
+  targetUniversities String   // JSON string of array
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model ProfileDraft {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  draftData String   // JSON string representing current form state
+  updatedAt DateTime @updatedAt
+}
+
+model ProjectDB {
+  id                         String        @id @default(uuid())
+  title                      String
+  description                String
+  category                   String
+  minGrade                   Int
+  maxGrade                   Int
+  difficulty                 String        // Beginner, Intermediate, Advanced
+  requiredSkills             String        // JSON string of array
+  tags                       String        // JSON string of array
+  suggestedExecutionPathways String        // JSON string of array of pathways
+  userProjects               UserProject[]
+}
+
+model UserProject {
+  id                 String      @id @default(uuid())
+  userId             String
+  user               User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId          String
+  project            ProjectDB   @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  selectedPathway    String
+  customizationNotes String?
+  status             String      @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED
+  startedAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  alignmentScoreDetails String?      // JSON string of university matching details
+  chatMessages          ChatMessage[]
+  milestones            Milestone[]
+}
+
+model Milestone {
+  id                     String          @id @default(uuid())
+  userProjectId          String
+  userProject            UserProject     @relation(fields: [userProjectId], references: [id], onDelete: Cascade)
+  title                  String
+  description            String
+  sequenceOrder          Int
+  estimatedDurationWeeks Int
+  status                 String          @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, COMPLETED
+  tasks                  Task[]
+  reflectionLogs         ReflectionLog[]
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  milestoneId String
+  milestone   Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  title       String
+  isCompleted Boolean   @default(false)
+}
+
+model ReflectionLog {
+  id               String    @id @default(uuid())
+  milestoneId      String
+  milestone        Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  learningOutcomes String
+  challenges       String
+  solutions        String
+  resourcesUsed    String
+  mediaLinks       String?   // JSON string of array of attachment links
+  createdAt        DateTime  @default(now())
+}
+
+model ChatMessage {
+  id            String      @id @default(uuid())
+  userProjectId String
+  userProject   UserProject @relation(fields: [userProjectId], references: [id], onDelete: Cascade)
+  sender        String      // USER or ADVISOR
+  message       String
+  createdAt     DateTime    @default(now())
+}
+
