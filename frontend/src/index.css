@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
 
 :root {
-  /* Colors */
+  /* Default: Dark Theme */
   --bg-color: #0b0c10;
   --panel-bg: rgba(22, 24, 33, 0.7);
   --panel-border: rgba(255, 255, 255, 0.08);
@@ -22,6 +22,17 @@
   --error: #f43f5e;
   --warning: #f59e0b;
 
+  --heading-color: #ffffff;
+  --header-bg: rgba(11, 12, 16, 0.6);
+  --input-bg: rgba(15, 23, 42, 0.6);
+  --input-text: #ffffff;
+  --input-border: rgba(255, 255, 255, 0.1);
+  --box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  
+  --bg-grad-1: rgba(139, 92, 246, 0.15);
+  --bg-grad-2: rgba(6, 182, 212, 0.15);
+  --bg-grad-3: rgba(16, 185, 129, 0.1);
+
   --sans-font: 'Plus Jakarta Sans', system-ui, sans-serif;
   --heading-font: 'Outfit', sans-serif;
   --mono-font: 'Fira Code', monospace;
@@ -35,14 +46,47 @@
   box-sizing: border-box;
 }
 
+[data-theme='light'] {
+  --bg-color: #f8fafc;
+  --panel-bg: rgba(255, 255, 255, 0.75);
+  --panel-border: rgba(15, 23, 42, 0.08);
+  --text-main: #334155;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+  
+  --primary: #7c3aed;
+  --primary-hover: #6d28d9;
+  --primary-glow: rgba(124, 58, 237, 0.15);
+  
+  --accent-cyan: #0891b2;
+  --accent-cyan-glow: rgba(8, 145, 178, 0.15);
+  
+  --accent-emerald: #059669;
+  --accent-emerald-glow: rgba(5, 150, 105, 0.15);
+  
+  --error: #e11d48;
+  --warning: #d97706;
+
+  --heading-color: #0f172a;
+  --header-bg: rgba(248, 250, 252, 0.85);
+  --input-bg: rgba(255, 255, 255, 0.95);
+  --input-text: #0f172a;
+  --input-border: rgba(15, 23, 42, 0.12);
+  --box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.06);
+  
+  --bg-grad-1: rgba(124, 58, 237, 0.06);
+  --bg-grad-2: rgba(8, 145, 178, 0.06);
+  --bg-grad-3: rgba(5, 150, 105, 0.04);
+}
+
 body {
   margin: 0;
   padding: 0;
   background-color: var(--bg-color);
   background-image: 
-    radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.15) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, var(--bg-grad-1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, var(--bg-grad-2) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, var(--bg-grad-3) 0px, transparent 50%);
   background-attachment: fixed;
   min-height: 100vh;
   overflow-x: hidden;
@@ -51,7 +95,7 @@ body {
 /* Base Styles & Typography */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--heading-font);
-  color: #fff;
+  color: var(--heading-color);
   margin: 0 0 1rem 0;
 }
 
@@ -62,7 +106,7 @@ a {
 }
 
 a:hover {
-  color: #fff;
+  color: var(--heading-color);
 }
 
 /* Glassmorphism Container */
@@ -72,12 +116,16 @@ a:hover {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--panel-border);
   border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: var(--box-shadow);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
 }
 
 .glass-panel:hover {
   border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme='light'] .glass-panel:hover {
+  border-color: rgba(15, 23, 42, 0.15);
 }
 
 /* Main Layout */
@@ -93,7 +141,7 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 2rem;
-  background: rgba(11, 12, 16, 0.6);
+  background: var(--header-bg);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--panel-border);
   position: sticky;
@@ -120,7 +168,7 @@ a:hover {
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.5px;
-  color: #fff;
+  color: var(--heading-color);
 }
 
 .user-status {
@@ -284,7 +332,7 @@ a:hover {
   left: 0;
   right: 0;
   height: 2px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--panel-border);
   z-index: 1;
   transform: translateY(-50%);
 }
@@ -293,8 +341,8 @@ a:hover {
   width: 2.2rem;
   height: 2.2rem;
   border-radius: 50%;
-  background: #1e293b;
-  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: var(--input-bg);
+  border: 2px solid var(--input-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -334,10 +382,10 @@ a:hover {
 .form-control {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   border-radius: 8px;
-  color: #fff;
+  color: var(--input-text);
   font-family: var(--sans-font);
   font-size: 0.95rem;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -368,8 +416,8 @@ a:hover {
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
   border-radius: 8px;
   min-height: 45px;
   align-items: center;
@@ -378,7 +426,7 @@ a:hover {
 .tags-input-container input {
   border: none;
   background: transparent;
-  color: #fff;
+  color: var(--input-text);
   outline: none;
   flex-grow: 1;
   padding: 0.25rem;
@@ -727,8 +775,8 @@ a:hover {
   padding: 0.3rem 0.6rem;
   border-radius: 6px;
   font-size: 0.8rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
   color: var(--text-muted);
   display: inline-flex;
   align-items: center;
@@ -737,19 +785,19 @@ a:hover {
 
 .resource-chip:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  color: var(--heading-color);
 }
 
 /* Reflection logs section */
 .reflection-section {
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--panel-border);
 }
 
 .log-entry {
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
   border-radius: 8px;
   padding: 1.25rem;
   margin-bottom: 1rem;

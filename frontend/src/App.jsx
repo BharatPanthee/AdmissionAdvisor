@@ -8,9 +8,24 @@ function App() {
   const [mockEmail, setMockEmail] = useState('student@example.com');
   const [mockName, setMockName] = useState('Jane Doe');
   
+  // Theme state
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('astra_theme') || 'dark';
+  });
+
   // Custom API Key Settings state
   const [showSettings, setShowSettings] = useState(false);
   const [customApiKey, setCustomApiKey] = useState('');
+
+  // Sync theme with DOM document element
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('astra_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   // App navigation / view states
   // Views: 'landing', 'wizard', 'selection', 'dashboard', 'portfolio', 'billing'
@@ -715,7 +730,7 @@ function App() {
                 else fetchSuggestions();
               }} 
               className="nav-link"
-              style={{ background: 'none', border: 'none', color: (currentView === 'dashboard' || currentView === 'selection') ? '#fff' : 'var(--text-muted)', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '500' }}
+              style={{ background: 'none', border: 'none', color: (currentView === 'dashboard' || currentView === 'selection') ? 'var(--heading-color)' : 'var(--text-muted)', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '500' }}
             >
               Roadmap
             </button>
@@ -725,7 +740,7 @@ function App() {
                 refreshBillingStatus();
               }} 
               className="nav-link"
-              style={{ background: 'none', border: 'none', color: currentView === 'billing' ? '#fff' : 'var(--text-muted)', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '500' }}
+              style={{ background: 'none', border: 'none', color: currentView === 'billing' ? 'var(--heading-color)' : 'var(--text-muted)', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '500' }}
             >
               Billing & Account
             </button>
@@ -742,7 +757,7 @@ function App() {
               }}
               style={{ 
                 background: 'rgba(255,255,255,0.04)', 
-                border: '1px solid rgba(255,255,255,0.08)', 
+                border: '1px solid var(--panel-border)', 
                 borderRadius: '20px', 
                 padding: '0.25rem 0.75rem', 
                 fontSize: '0.85rem', 
@@ -755,11 +770,19 @@ function App() {
               title="Click to manage billing"
             >
               <span style={{ color: '#fbbf24' }}>🪙</span>
-              <strong style={{ color: '#fff' }}>{user.credits ? user.credits.toFixed(1) : '0.0'}</strong>
+              <strong style={{ color: 'var(--heading-color)' }}>{user.credits ? user.credits.toFixed(1) : '0.0'}</strong>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>credits ({user.tier})</span>
             </div>
           )}
 
+          <button 
+            onClick={toggleTheme} 
+            className="btn btn-secondary" 
+            style={{ padding: '0.4rem 0.6rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', marginRight: '0.5rem' }}
+            title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            {theme === 'dark' ? "☀️ Light" : "🌙 Dark"}
+          </button>
           <button 
             onClick={() => setShowSettings(true)} 
             className="btn btn-secondary" 
@@ -771,7 +794,7 @@ function App() {
           {user ? (
             <>
               <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginRight: '0.5rem' }}>
-                Hi, <strong style={{ color: '#fff' }}>{user.name.split(' ')[0]}</strong>
+                Hi, <strong style={{ color: 'var(--heading-color)' }}>{user.name.split(' ')[0]}</strong>
               </span>
               <button onClick={handleLogout} className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>
                 Sign Out
@@ -1280,7 +1303,7 @@ function App() {
 
                         {/* Tasks Checklist */}
                         <div className="tasks-list">
-                          <h4 style={{ fontSize: '0.95rem', marginBottom: '0.5rem', color: '#fff' }}>Milestone Tasks</h4>
+                          <h4 style={{ fontSize: '0.95rem', marginBottom: '0.5rem', color: 'var(--heading-color)' }}>Milestone Tasks</h4>
                           {ms.tasks.map((task) => (
                             <div key={task.id} className={`task-item ${task.isCompleted ? 'completed' : ''}`}>
                               <input 
@@ -1297,7 +1320,7 @@ function App() {
 
                         {/* Suggested Resources */}
                         <div className="resources-box">
-                          <h4 style={{ fontSize: '0.95rem', marginBottom: '0.25rem', color: '#fff' }}>Recommended Resources</h4>
+                          <h4 style={{ fontSize: '0.95rem', marginBottom: '0.25rem', color: 'var(--heading-color)' }}>Recommended Resources</h4>
                           <div className="resources-list">
                             {ms.status !== 'NOT_STARTED' ? (
                               ['Google', 'Notion', 'GitHub'].map((resItem, i) => (
@@ -1307,6 +1330,7 @@ function App() {
                                   target="_blank" 
                                   rel="noreferrer"
                                   className="resource-chip"
+                                  style={{ color: 'var(--text-muted)' }}
                                 >
                                   🔗 {resItem} Guide
                                 </a>
@@ -1319,7 +1343,7 @@ function App() {
 
                         {/* Reflections Logs Section */}
                         <div className="reflection-section">
-                          <h4 style={{ fontSize: '1rem', color: '#fff', marginBottom: '1rem' }}>Reflection Logs</h4>
+                          <h4 style={{ fontSize: '1rem', color: 'var(--heading-color)', marginBottom: '1rem' }}>Reflection Logs</h4>
                           
                           {/* List previously submitted logs */}
                           {ms.reflectionLogs.map((log) => {
@@ -1484,12 +1508,12 @@ function App() {
                   boxSizing: 'border-box'
                 }}
               >
-                <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.75rem', marginBottom: '0.75rem', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ borderBottom: '1px solid var(--panel-border)', paddingBottom: '0.75rem', marginBottom: '0.75rem', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <h4 style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>💬 Advisor Assistant</h4>
+                    <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--heading-color)' }}>💬 Advisor Assistant</h4>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>Ask Astra questions regarding your roadmap.</p>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'var(--input-bg)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
                     0.1🪙/msg
                   </div>
                 </div>
@@ -1511,12 +1535,12 @@ function App() {
                           borderRadius: '12px',
                           borderTopRightRadius: msg.sender === 'USER' ? '2px' : '12px',
                           borderTopLeftRadius: msg.sender === 'ADVISOR' ? '2px' : '12px',
-                          background: msg.sender === 'USER' ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
-                          border: msg.sender === 'ADVISOR' ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                          background: msg.sender === 'USER' ? 'var(--primary)' : 'var(--input-bg)',
+                          border: msg.sender === 'ADVISOR' ? '1px solid var(--panel-border)' : 'none',
                           fontSize: '0.85rem',
                           lineHeight: '1.4',
                           textAlign: 'left',
-                          color: '#fff'
+                          color: msg.sender === 'USER' ? '#fff' : 'var(--text-main)'
                         }}
                       >
                         {msg.message}
@@ -1693,15 +1717,15 @@ function App() {
           {/* 6. BILLING & ACCOUNT VIEW */}
           {currentView === 'billing' && user && (
             <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '0 1rem', textAlign: 'left' }}>
-              <h1 style={{ fontSize: '2.2rem', color: '#fff', marginBottom: '0.5rem' }}>🪙 Billing & Account</h1>
+              <h1 style={{ fontSize: '2.2rem', color: 'var(--heading-color)', marginBottom: '0.5rem' }}>🪙 Billing & Account</h1>
               <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem' }}>Manage your plan, check credit usage rates, or top-up tokens.</p>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
                 {/* Account Details Card */}
                 <div className="glass-panel" style={{ padding: '1.75rem' }}>
-                  <h3 style={{ fontSize: '1.2rem', color: '#fff', margin: '0 0 1rem 0' }}>Plan Status</h3>
+                  <h3 style={{ fontSize: '1.2rem', color: 'var(--heading-color)', margin: '0 0 1rem 0' }}>Plan Status</h3>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                    <div style={{ background: user.tier === 'PREMIUM' ? 'var(--primary-glow)' : 'rgba(255,255,255,0.05)', color: user.tier === 'PREMIUM' ? 'var(--primary-hover)' : 'var(--text-muted)', border: '1px solid currentColor', borderRadius: '4px', padding: '0.3rem 0.6rem', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase' }}>
+                    <div style={{ background: user.tier === 'PREMIUM' ? 'var(--primary-glow)' : 'var(--input-bg)', color: user.tier === 'PREMIUM' ? 'var(--primary-hover)' : 'var(--text-muted)', border: '1px solid currentColor', borderRadius: '4px', padding: '0.3rem 0.6rem', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase' }}>
                       {user.tier} Plan
                     </div>
                     {user.tier === 'FREE' && (
@@ -1724,7 +1748,7 @@ function App() {
                 {/* Token Balances Card */}
                 <div className="glass-panel" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', justifycontent: 'space-between' }}>
                   <div>
-                    <h3 style={{ fontSize: '1.2rem', color: '#fff', margin: '0 0 0.5rem 0' }}>Advisor Tokens</h3>
+                    <h3 style={{ fontSize: '1.2rem', color: 'var(--heading-color)', margin: '0 0 0.5rem 0' }}>Advisor Tokens</h3>
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 1rem 0' }}>Deducted dynamically based on AI model interactions.</p>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -1736,25 +1760,25 @@ function App() {
 
               {/* Buying Top ups Card */}
               <div className="glass-panel" style={{ padding: '2rem', marginBottom: '2.5rem' }}>
-                <h3 style={{ fontSize: '1.3rem', color: '#fff', margin: '0 0 0.5rem 0' }}>Top Up Token Balance</h3>
+                <h3 style={{ fontSize: '1.3rem', color: 'var(--heading-color)', margin: '0 0 0.5rem 0' }}>Top Up Token Balance</h3>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Need more evaluations? Buy credit bundles instantly below.</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                  <div className="glass-panel" style={{ padding: '1.25rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.06)' }}>
+                  <div className="glass-panel" style={{ padding: '1.25rem', textAlign: 'center', background: 'var(--input-bg)', borderColor: 'var(--panel-border)' }}>
                     <h4 style={{ fontSize: '1rem', margin: '0 0 0.25rem 0' }}>Starter Pack</h4>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>50 Credits</p>
-                    <div style={{ fontSize: '1.3rem', fontWeight: '700', color: '#fff', marginBottom: '1rem' }}>$4.99</div>
+                    <div style={{ fontSize: '1.3rem', fontWeight: '700', color: 'var(--heading-color)', marginBottom: '1rem' }}>$4.99</div>
                     <button onClick={() => handleBuyCredits(50)} className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }}>Buy Pack</button>
                   </div>
-                  <div className="glass-panel" style={{ padding: '1.25rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.06)' }}>
+                  <div className="glass-panel" style={{ padding: '1.25rem', textAlign: 'center', background: 'var(--input-bg)', borderColor: 'var(--panel-border)' }}>
                     <h4 style={{ fontSize: '1rem', margin: '0 0 0.25rem 0' }}>Growth Pack</h4>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>120 Credits</p>
-                    <div style={{ fontSize: '1.3rem', fontWeight: '700', color: '#fff', marginBottom: '1rem' }}>$9.99</div>
+                    <div style={{ fontSize: '1.3rem', fontWeight: '700', color: 'var(--heading-color)', marginBottom: '1rem' }}>$9.99</div>
                     <button onClick={() => handleBuyCredits(120)} className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }}>Buy Pack</button>
                   </div>
-                  <div className="glass-panel" style={{ padding: '1.25rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.06)' }}>
+                  <div className="glass-panel" style={{ padding: '1.25rem', textAlign: 'center', background: 'var(--input-bg)', borderColor: 'var(--panel-border)' }}>
                     <h4 style={{ fontSize: '1rem', margin: '0 0 0.25rem 0' }}>Professional Pack</h4>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>300 Credits</p>
-                    <div style={{ fontSize: '1.3rem', fontWeight: '700', color: '#fff', marginBottom: '1rem' }}>$19.99</div>
+                    <div style={{ fontSize: '1.3rem', fontWeight: '700', color: 'var(--heading-color)', marginBottom: '1rem' }}>$19.99</div>
                     <button onClick={() => handleBuyCredits(300)} className="btn btn-primary btn-emerald" style={{ width: '100%', fontSize: '0.85rem' }}>Buy Pack</button>
                   </div>
                 </div>
@@ -1762,7 +1786,7 @@ function App() {
 
               {/* Deductions rate documentation table */}
               <div className="glass-panel" style={{ padding: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.1rem', color: '#fff', margin: '0 0 1rem 0' }}>Token Deduction Rates</h3>
+                <h3 style={{ fontSize: '1.1rem', color: 'var(--heading-color)', margin: '0 0 1rem 0' }}>Token Deduction Rates</h3>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-muted)', textAlign: 'left' }}>
