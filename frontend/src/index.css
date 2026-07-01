@@ -206,14 +206,14 @@ a:hover {
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   color: var(--text-main);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  background: var(--primary-glow);
+  color: var(--heading-color);
   transform: translateY(-1px);
 }
 
@@ -245,7 +245,7 @@ a:hover {
 }
 
 .btn-text:hover {
-  color: #fff;
+  color: var(--heading-color);
 }
 
 /* Landing Page */
